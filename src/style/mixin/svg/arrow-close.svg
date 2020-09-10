@@ -1,0 +1,10 @@
+<svg id="图层_1" data-name="图层 1"
+    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30">
+    <defs>
+        <style>.cls-1{fill:none;}.cls-2{fill:#999;}</style>
+    </defs>
+    <title>删除</title>
+    <rect class="cls-1" x="-1464" y="-3653" width="2349" height="6186"/>
+    <path class="cls-1" d="M-2256-3870V2316H1626V-3870Z"/>
+    <path class="cls-2" d="M15,0A15,15,0,1,0,30,15,15,15,0,0,0,15,0Zm6,21a1,1,0,0,1-1.42,0L15,16.41,10.4,21A1,1,0,0,1,9,19.6l4.6-4.6L9,10.4A1,1,0,0,1,10.4,9l4.6,4.6L19.6,9A1,1,0,0,1,21,10.4L16.41,15,21,19.6A1,1,0,0,1,21,21Z"/>
+</svg>

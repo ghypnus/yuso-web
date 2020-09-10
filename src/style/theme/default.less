@@ -1,0 +1,243 @@
+/* 基本px单位 */
+@hd: 1px;
+/* 基本rem单位 */
+@em: 1rem;
+
+/* 色彩 - 文字色 */
+@color-text-base: rgba(0, 0, 0, 0.65);/* 基本 */
+@color-text-base-inverse: #fff;/* 基本 - 反色 */
+@color-text-title: rgba(0, 0, 0, 0.85);/* 标题色 */
+@color-text-secondary: rgba(0, 0, 0, 0.45);/* 辅助色 */
+@color-text-highlight: @color-text-title; /* 文字高亮 */
+@color-text-placeholder: rgba(0, 0, 0, 0.25);/* 文本框提示 */
+@color-text-disabled: rgba(0, 0, 0, 0.45);/* 失效 */
+@color-text-read-only: rgba(0, 0, 0, 0.85); /* 只读 */
+@color-text-caption: #888;/* 辅助描述 */
+@color-link: @brand-primary;/* 链接 */
+
+/* 背景色 */
+@fill-base: #fff;/* 组件默认背景 */
+@fill-body: #f8f8f8;/* 页面背景 */
+@fill-tap: #ddd;/* 组件默认背景 - 按下 */
+@fill-disabled: #d5d5d5;/* 通用失效背景 */
+@fill-mask: rgba(0, 0, 0, 0.45);/* 遮罩背景 */
+@color-icon-base: rgba(0,0,0, 0.45);/* 许多小图标的背景，比如一些小圆点，加减号 */
+@fill-grey: #f7f7f7;/* 透明度 */
+@opacity-disabled: 0.3;/* switch checkbox radio 等组件禁用的透明度 */
+
+/* 全局/品牌色 */
+@brand-primary: #4285f4;
+@brand-thirdary: #ff6454;
+@brand-primary-tap: #de1d0e;
+@brand-success: #6abf47;
+@brand-warning: #e94f4f;
+@brand-error: #ff6454;
+@brand-important: @brand-error;
+@brand-wait: #108ee9;
+@border-color-base: #e1e1e1;/* 边框色 */
+@border-color-dark: #bcbcbc;/* 深色边框 */
+@border-color-arrow: @color-icon-base;/* 箭头边框色 */
+@border-color-divider: #f0f0f0;/* 分割线色 */
+
+/* 字体尺寸 */
+@font-size-special: calc(0.75 * @em);/* 特殊 */
+@font-size-text: calc(1 * @em);/* 正文 */
+@font-size-secondary: calc(0.875 * @em);
+@font-size-title: calc(1 * @em);/* 标题 */
+@font-size-heading: calc(1.125 * @em);/* 头部 */
+
+/* 圆角 */
+@radius-xs: calc(2 * @hd);
+@radius-sm: calc(3 * @hd);
+@radius-md: calc(4 * @hd);
+@radius-lg: calc(7 * @hd);
+@radius-circle: 50%;
+
+/* 边框尺寸 */
+@border-width-sm: 1px;
+@border-width-md: 1px;
+@border-width-lg: calc(2 * @hd);
+
+/* 间距 */
+/* 水平间距 */
+@h-spacing-sm: calc(5 * @hd);
+@h-spacing-md: calc(0.625 * @em);
+@h-spacing-lg: calc(0.75 * @em);
+@h-spacing-xl: @em;
+@h-spacing-xxl: calc(1.25 * @em);
+@h-spacing-common: calc(10 * @hd);
+
+/* 垂直间距 */
+@v-spacing-xs: calc(3 * @hd);
+@v-spacing-sm: calc(6 * @hd);
+@v-spacing-md: calc(0.625 * @em);
+@v-spacing-lg: @em;
+@v-spacing-xl: calc(1.25 * @em);
+
+/* 高度 */
+@line-height-base: 1;
+/* 单行行高 */
+@line-height-paragraph: 1.5;
+/* 多行行高 */
+/* 图标尺寸 */
+@icon-size-xxs: calc(0.875 * @em);
+@icon-size-xs: calc(18 * @hd);
+@icon-size-sm: calc(21 * @hd);
+@icon-size-md: calc(22 * @hd);
+
+/* 导航条上的图标、grid的图标大小 */
+@icon-size-lg: calc(36 * @hd);
+/* 动画缓动 */
+@ease-in-out-quint: cubic-bezier(0.86, 0, 0.07, 1);
+/* 组件变量 */
+@actionsheet-item-height: calc(50 * @hd);
+@actionsheet-item-font-size: calc(18 * @hd);
+
+/* button */
+@button-height: calc(3 * @em);
+@button-height-sm: calc(2 * @em);
+@button-font-size: @em;
+@button-font-size-sm: calc(0.875 * @em);
+
+/* checkbox */
+@checkbox-height: calc(3 * @em);
+@checkbox-height-sm: calc(2 * @em);
+
+/* calendar */
+/* 选中背景色 */
+@calendar-fill-selected: #cfcfcf;
+
+/* gesture */
+
+/* 同时应用于背景、文字颜色、边框色 */
+@ghost-button-fill-tap: fade(@brand-primary, 60%);
+@warning-button-fill: #e94f4f;
+@warning-button-fill-tap: #d24747;
+@link-button-fill-tap: #ddd;
+@link-button-font-size: calc(16 * @hd);
+
+/* modal */
+@modal-font-size-heading: calc(18 * @hd);
+@modal-button-font-size: calc(18 * @hd);
+
+/* image-picker */
+@image-picker-fill: @fill-body;
+
+/* 按钮字号 */
+@modal-button-height: calc(50 * @hd);
+/* 按钮高度 */
+/* list */
+@list-title-height: 30 * @hd;
+@list-item-height-sm: 35 * @hd;
+@list-item-height: calc(3 * @em);
+@list-item-fill-title: #ff9388;
+
+/* input */
+@input-height: calc(3 * @em);
+@input-height-small: calc(2 * @em);
+@input-label-width: 17 * @hd;
+@input-fill: @fill-base;
+@input-font-size: @em;
+@input-font-size-sm: calc(0.875 * @em);
+/* input clear icon 的背景色 */
+@input-color-icon: #ccc;
+@input-color-icon-tap: @brand-primary;
+
+/* tabs */
+@tabs-color: @brand-primary;
+@tabs-height: 43.5 * @hd;
+@tabs-font-size-heading: 15 * @hd;
+@tabs-ink-bar-height: @border-width-lg;
+@segmented-control-color: @brand-primary;
+@segmented-control-height: 27 * @hd;
+@segmented-control-fill-tap: fade(@brand-primary, 0.1);
+@tab-bar-fill: #ebeeef;
+@tab-bar-height: 50 * @hd;
+@tabs-effect-duration: 0.3s;
+@tabs-easing-in-out: cubic-bezier(0.35, 0, 0.25, 1);
+@tabs-page-hide-color: rgba(255, 255, 255, 0);
+@tabs-page-show-color: rgba(255, 255, 255, 1);
+
+/* message */
+@message-width: 90%;
+@message-button-odd: #979797;
+@message-button-odd-color: rgba(0, 0, 0, 0.65);
+@message-button-even: #4285f4;
+@message-fill: #ffffff;
+
+/* swipe */
+@swipe-pagination-fill: #cad1db;
+
+/* avatar */
+@avatar-width: calc(2.5 * @em);
+@avatar-height: calc(2.5 * @em);
+@avatar-fill: #f0f0f0;
+
+/* picker */
+@picker-mask-fill: #ffffff; 
+
+/* grade */
+@grade-fill: #ffffff;
+@grade-textarea-fill: #F9FAFC;
+@grade-star-fill: rgba(0,0,0, 0.04);
+@grade-star-fill-active: #FADB14;
+
+/* toast */
+/* toast, activity-indicator 的背景颜色 */
+@toast-fill: rgba(0, 0, 0, 0.65);
+
+/* search-bar */
+@search-bar-fill: #efeff4;
+@search-bar-height: 44 * @hd;
+@search-bar-input-height: 28 * @hd;
+@search-bar-font-size: 15 * @hd;
+/* input search icon 的背景色 */
+@search-color-icon: #bbb;
+/* notice-bar */
+@notice-bar-fill: #fefcec;
+@notice-bar-height: 36 * @hd;
+@notice-bar-color: #f76a24;
+
+/* steps */
+@steps-color-border: #ccc;
+@steps-width: 24px;
+@steps-height: 24px;
+@steps-color-text: #000;
+@steps-color-wait: #ccc;
+@step-description-max-width: 100px;
+
+/* switch */
+@switch-width: 3 * @em;
+@switch-height: 1.5 * @em;
+@switch-fill: #e8e8e8;
+@switch-color-border: #bcbcbc;
+@switch-fill-checked: @brand-primary;
+@switch-color-border-checked: @brand-primary;
+
+/* tag */
+@tag-height: 25 * @hd;
+@tag-height-sm: 15 * @hd;
+@tag-color: @brand-primary;
+
+/* keyboard */
+@keyboard-confirm-color: @brand-primary;
+@keyboard-confirm-tap-color: @brand-primary-tap;
+
+/* picker */
+/* picker 标题的高度 */
+@option-height: 42 * @hd;
+
+/* z-index */
+@progress-zindex: 2000;
+@popover-zindex: 1999;
+@message-zindex: 1999;
+@grade-zindex: 1999;
+@toast-zindex: 1999;
+@viewer-zindex: 1999;
+@loading-zindex: 1998;
+@action-sheet-zindex: 1000;/* actonsheet 会放到 popup / modal 中 */
+@picker-zindex: 1000;
+@pop-layer-zindex: 999;
+@modal-zindex: 999;/* modal.alert 应该最大，其他应该较小 */
+@tabs-pagination-zindex: 999;
+@gesture-zindex: 100; /* 手势解锁 */
