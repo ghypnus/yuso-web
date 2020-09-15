@@ -16,6 +16,7 @@ export default (props) => {
     cols = 3,
     data = [],
     onSearch,
+    loading = false,
   } = props;
   const [form] = Form.useForm();
 
@@ -25,6 +26,7 @@ export default (props) => {
         <Row gutter={16}>
           {data.map((item) => {
             let Comp = components[item.type];
+            const compProps = item.props || {};
             return (
               <Col span={24 / cols}>
                 <Form.Item
@@ -33,16 +35,25 @@ export default (props) => {
                   labelCol={{ span: 8 }}
                   wrapperCol={{ span: 16 }}
                 >
-                  <Comp />
+                  <Comp {...compProps} />
                 </Form.Item>
               </Col>
             );
           })}
           <Col span={24 / cols}>
             <Space>
-              <Button>重置</Button>
+              <Button onClick={() => {
+                form.resetFields();
+                if (onSearch) {
+                  onSearch();
+                }
+              }}
+              >
+                重置
+              </Button>
               <Button
                 type="primary"
+                loading={loading}
                 onClick={() => {
                   if (onSearch) {
                     onSearch(form.getFieldsValue());

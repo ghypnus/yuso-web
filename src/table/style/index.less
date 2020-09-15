@@ -1,0 +1,53 @@
+@import '../../style/theme/default.less';
+
+.yuso-table {
+  &-search {
+    margin-bottom: 16px;
+    padding: 24px 24px 0;
+    background: #fff;
+  }
+
+  &-toolbar {
+    display: flex;
+    align-items: center;
+
+    &-align-right {
+      justify-content: flex-end;
+    }
+  }
+
+  .react-resizable {
+    position: relative;
+    background-clip: padding-box;
+  }
+
+  &-resizable-handle {
+    position: absolute;
+    right: -5px;
+    bottom: 0;
+    z-index: 1;
+    width: 10px;
+    height: 100%;
+    cursor: col-resize;
+  }
+
+  .yuso-table-header-cell {
+    height: 49px;
+  }
+
+  .drop-over-downward {
+    border-right: 1px dashed @primary-color;
+  }
+
+  .drop-over-upward {
+    border-left: 1px dashed @primary-color;
+  }
+
+  .yuso-table-drop-handle {
+    width: 100%;
+    position: absolute;
+    left: 0;
+    padding: 16px;
+    top: 0;
+  }
+}

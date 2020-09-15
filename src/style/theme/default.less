@@ -13,7 +13,7 @@
 @color-text-disabled: rgba(0, 0, 0, 0.45);/* 失效 */
 @color-text-read-only: rgba(0, 0, 0, 0.85); /* 只读 */
 @color-text-caption: #888;/* 辅助描述 */
-@color-link: @brand-primary;/* 链接 */
+@color-link: @primary-color;/* 链接 */
 
 /* 背景色 */
 @fill-base: #fff;/* 组件默认背景 */
@@ -26,9 +26,8 @@
 @opacity-disabled: 0.3;/* switch checkbox radio 等组件禁用的透明度 */
 
 /* 全局/品牌色 */
-@brand-primary: #4285f4;
-@brand-thirdary: #ff6454;
-@brand-primary-tap: #de1d0e;
+@primary-color: #4285f4;
+@primary-color-tap: #de1d0e;
 @brand-success: #6abf47;
 @brand-warning: #e94f4f;
 @brand-error: #ff6454;
@@ -110,7 +109,7 @@
 /* gesture */
 
 /* 同时应用于背景、文字颜色、边框色 */
-@ghost-button-fill-tap: fade(@brand-primary, 60%);
+@ghost-button-fill-tap: fade(@primary-color, 60%);
 @warning-button-fill: #e94f4f;
 @warning-button-fill-tap: #d24747;
 @link-button-fill-tap: #ddd;
@@ -141,16 +140,16 @@
 @input-font-size-sm: calc(0.875 * @em);
 /* input clear icon 的背景色 */
 @input-color-icon: #ccc;
-@input-color-icon-tap: @brand-primary;
+@input-color-icon-tap: @primary-color;
 
 /* tabs */
-@tabs-color: @brand-primary;
+@tabs-color: @primary-color;
 @tabs-height: 43.5 * @hd;
 @tabs-font-size-heading: 15 * @hd;
 @tabs-ink-bar-height: @border-width-lg;
-@segmented-control-color: @brand-primary;
+@segmented-control-color: @primary-color;
 @segmented-control-height: 27 * @hd;
-@segmented-control-fill-tap: fade(@brand-primary, 0.1);
+@segmented-control-fill-tap: fade(@primary-color, 0.1);
 @tab-bar-fill: #ebeeef;
 @tab-bar-height: 50 * @hd;
 @tabs-effect-duration: 0.3s;
@@ -211,17 +210,17 @@
 @switch-height: 1.5 * @em;
 @switch-fill: #e8e8e8;
 @switch-color-border: #bcbcbc;
-@switch-fill-checked: @brand-primary;
-@switch-color-border-checked: @brand-primary;
+@switch-fill-checked: @primary-color;
+@switch-color-border-checked: @primary-color;
 
 /* tag */
 @tag-height: 25 * @hd;
 @tag-height-sm: 15 * @hd;
-@tag-color: @brand-primary;
+@tag-color: @primary-color;
 
 /* keyboard */
-@keyboard-confirm-color: @brand-primary;
-@keyboard-confirm-tap-color: @brand-primary-tap;
+@keyboard-confirm-color: @primary-color;
+@keyboard-confirm-tap-color: @primary-color-tap;
 
 /* picker */
 /* picker 标题的高度 */
