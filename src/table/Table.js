@@ -6,22 +6,22 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Table } from 'antd';
 import { Resizable } from 'react-resizable';
-import { BaseUtil } from 'yuso-util';
+import { ElementUtil } from 'yuso-util';
 import { DndProvider, useDrag, useDrop, createDndContext } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
+import classnames from 'classnames';
 import Search from './Search';
 import Toolbar from './Toolbar';
 
 const prefixCls = 'yuso-table';
-
 const type = 'DragableTitle';
 
 const RNDContext = createDndContext(HTML5Backend);
 
 const DragableTitle = (props) => {
   const { index, onResize, width, moveColumn, style, children, ...restProps } = props;
-  const ref = React.useRef();
+  const ref = useRef();
   const [{ isOver, dropClassName }, drop] = useDrop({
     accept: type,
     collect: (monitor) => {
@@ -92,32 +92,40 @@ const DragableTitle = (props) => {
 
 
 const YusoTable = (props) => {
-  const { prefixCls, bordered, rowKey, search, title, columns = [] } = props;
+  const {
+    prefixCls,
+    bordered,
+    rowKey,
+    search,
+    title,
+    columns = [],
+    options = {},
+  } = props;
   const [pageNum, setPageNum] = useState(1);
   const [rowCount, setRowCount] = useState(15);
   const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
-  const [searchParams, setSearchParams] = useState(null);
+  const [searchParams, setSearchParams] = useState({});
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [columnList, setColumnList] = useState(columns);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [columnList, setColumnList] = useState(columns.map((col) => ({ ...col, checked: col.checked !== undefined ? col.checked : true })));
+  const rootRef = useRef();
 
   useEffect(() => {
     setLoading({
       loading: true,
     });
-    let params = {
+    const {
+      action,
+      params = {},
+    } = options;
+    axios.post(action, {
       pageNum,
       rowCount,
-      request_type: 'table|query|Role',
-    };
-    if (!BaseUtil.isEmptyObject(searchParams)) {
-      params = {
-        ...params,
-        ...searchParams,
-      };
-    }
-    axios.post('/action.php', params).then((res) => {
+      ...params,
+      ...searchParams,
+    }).then((res) => {
       const { returnList, totalRowCount } = res;
       setLoading(false);
       setSearchLoading(false);
@@ -138,6 +146,7 @@ const YusoTable = (props) => {
   },
   [columnList]);
 
+
   const tableProps = {
     loading,
     bordered,
@@ -151,7 +160,7 @@ const YusoTable = (props) => {
         cell: DragableTitle,
       },
     },
-    columns: columnList.map((col, index) => ({
+    columns: columnList.filter((col) => col.checked).map((col, index) => ({
       ...col,
       onHeaderCell: (column) => ({
         index,
@@ -172,12 +181,34 @@ const YusoTable = (props) => {
     })),
     dataSource,
   };
-  if (title) tableProps.title = () => <Toolbar data={title} />;
+  if (title) {
+    tableProps.title = () => (
+      <Toolbar
+        schema={title}
+        columns={columnList}
+        onFilter={(cols) => {
+          setColumnList(cols);
+        }}
+        onFullscreen={(isFullscreen) => {
+          setFullscreen(isFullscreen);
+          if (isFullscreen) {
+            ElementUtil.requestFullscreen(rootRef.current);
+          } else {
+            ElementUtil.exitFullscreen(rootRef.current);
+          }
+        }}
+      />
+    );
+  }
 
   const manager = useRef(RNDContext);
 
   return (
-    <div className={prefixCls}>
+    <div ref={rootRef}
+      className={classnames(prefixCls, {
+        [`${prefixCls}-fullscreen`]: fullscreen,
+      })}
+    >
       {search && (
         <Search
           data={search}
