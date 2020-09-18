@@ -38,7 +38,9 @@ const ColumnSet = (props) => {
       content={(
         <div className={`${prefixCls}-list`}>
           {columns.map((item) => (
-            <div className={`${prefixCls}-list-item`}>
+            <div key={item.dataIndex}
+              className={`${prefixCls}-list-item`}
+            >
               <Checkbox
                 checked={item.checked}
                 onChange={(e) => {
@@ -56,7 +58,7 @@ const ColumnSet = (props) => {
             </div>
           ))}
         </div>
-            )}
+      )}
       trigger="click"
       visible={visible}
       onVisibleChange={(v) => setVisible(v)}

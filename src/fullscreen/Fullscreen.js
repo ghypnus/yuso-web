@@ -9,11 +9,11 @@ import { FullscreenOutlined } from '@ant-design/icons';
 
 const Fullscreen = (props) => {
   const [isFullscreen, setIsFullsreen] = useState(false);
-  const { onChange } = props;
+  const { prefixCls, onChange, ...restProps } = props;
   return (
     <Tooltip title="全屏">
       <FullscreenOutlined
-        {...props}
+        {...restProps}
         onClick={() => {
           if (onChange) {
             setIsFullsreen(!isFullscreen);

@@ -11,8 +11,6 @@ import { DndProvider, useDrag, useDrop, createDndContext } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 import classnames from 'classnames';
-import Search from './Search';
-import Toolbar from './Toolbar';
 
 const prefixCls = 'yuso-table';
 const type = 'DragableTitle';
@@ -90,16 +88,13 @@ const DragableTitle = (props) => {
   );
 };
 
-
-const YusoTable = (props) => {
+const YusoTable = ({ prefixCls, props, options }) => {
   const {
-    prefixCls,
     bordered,
     rowKey,
     search,
     title,
     columns = [],
-    options = {},
   } = props;
   const [pageNum, setPageNum] = useState(1);
   const [rowCount, setRowCount] = useState(15);
@@ -112,15 +107,22 @@ const YusoTable = (props) => {
   const [columnList, setColumnList] = useState(columns.map((col) => ({ ...col, checked: col.checked !== undefined ? col.checked : true })));
   const rootRef = useRef();
 
-  useEffect(() => {
+  /**
+   * 重新加载表格
+   * @param {Object} 接口参数
+   */
+  const reload = (data) => {
     setLoading({
       loading: true,
     });
+    if (data) {
+      setSearchParams(data);
+    }
     const {
-      action,
+      url,
       params = {},
     } = options;
-    axios.post(action, {
+    axios.post(url, {
       pageNum,
       rowCount,
       ...params,
@@ -131,6 +133,9 @@ const YusoTable = (props) => {
       setSearchLoading(false);
       setDataSource(returnList);
     });
+  };
+  useEffect(() => {
+    reload();
   }, [pageNum, rowCount, searchParams]);
 
   const moveColumn = useCallback((dragIndex, hoverIndex) => {
@@ -145,7 +150,6 @@ const YusoTable = (props) => {
     );
   },
   [columnList]);
-
 
   const tableProps = {
     loading,
@@ -181,25 +185,25 @@ const YusoTable = (props) => {
     })),
     dataSource,
   };
-  if (title) {
-    tableProps.title = () => (
-      <Toolbar
-        schema={title}
-        columns={columnList}
-        onFilter={(cols) => {
-          setColumnList(cols);
-        }}
-        onFullscreen={(isFullscreen) => {
-          setFullscreen(isFullscreen);
-          if (isFullscreen) {
-            ElementUtil.requestFullscreen(rootRef.current);
-          } else {
-            ElementUtil.exitFullscreen(rootRef.current);
-          }
-        }}
-      />
-    );
-  }
+  // if (title) {
+  //   tableProps.title = () => (
+  //     <Toolbar
+  //       schema={title}
+  //       columns={columnList}
+  //       onFilter={(cols) => {
+  //         setColumnList(cols);
+  //       }}
+  //       onFullscreen={(isFullscreen) => {
+  //         setFullscreen(isFullscreen);
+  //         if (isFullscreen) {
+  //           ElementUtil.requestFullscreen(rootRef.current);
+  //         } else {
+  //           ElementUtil.exitFullscreen(rootRef.current);
+  //         }
+  //       }}
+  //     />
+  //   );
+  // }
 
   const manager = useRef(RNDContext);
 
@@ -209,7 +213,7 @@ const YusoTable = (props) => {
         [`${prefixCls}-fullscreen`]: fullscreen,
       })}
     >
-      {search && (
+      {/* {search && (
         <Search
           data={search}
           loading={searchLoading}
@@ -218,7 +222,7 @@ const YusoTable = (props) => {
             setSearchParams(values);
           }}
         />
-      )}
+      )} */}
       <DndProvider manager={manager.current.dragDropManager}>
         <Table {...tableProps} />
       </DndProvider>
@@ -230,7 +234,5 @@ YusoTable.defaultProps = {
   prefixCls,
   bordered: false,
 };
-
-YusoTable.Search = Search;
 
 export default YusoTable;
