@@ -7,7 +7,7 @@ import React from 'react';
 import classnames from 'classnames';
 
 const Toolbar = (props) => {
-  const { prefixCls, align = 'right', children, columns = [], onFilter, onFullscreen } = props;
+  const { prefixCls, align = 'right', children } = props;
   const wrapCls = classnames(prefixCls, {
     [`${prefixCls}-align-${align}`]: align,
   });

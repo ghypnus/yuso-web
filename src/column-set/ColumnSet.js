@@ -71,7 +71,7 @@ const ColumnSet = (props) => {
 };
 
 ColumnSet.defaultProps = {
-  prefixCls: 'yuso-table-column-set',
+  prefixCls: 'yuso-column-set',
 };
 
 export default ColumnSet;

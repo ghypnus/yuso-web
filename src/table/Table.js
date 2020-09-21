@@ -6,11 +6,11 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Table } from 'antd';
 import { Resizable } from 'react-resizable';
-import { ElementUtil } from 'yuso-util';
 import { DndProvider, useDrag, useDrop, createDndContext } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 import classnames from 'classnames';
+import { ElementUtil } from 'yuso-util';
 
 const prefixCls = 'yuso-table';
 const type = 'DragableTitle';
@@ -88,12 +88,11 @@ const DragableTitle = (props) => {
   );
 };
 
-const YusoTable = ({ prefixCls, props, options }) => {
+const YusoTable = (data) => {
+  const { prefixCls, props } = data;
   const {
     bordered,
     rowKey,
-    search,
-    title,
     columns = [],
   } = props;
   const [pageNum, setPageNum] = useState(1);
@@ -101,42 +100,41 @@ const YusoTable = ({ prefixCls, props, options }) => {
   const [loading, setLoading] = useState(false);
   const [searchLoading, setSearchLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
-  const [searchParams, setSearchParams] = useState({});
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [fullscreen, setFullscreen] = useState(false);
   const [columnList, setColumnList] = useState(columns.map((col) => ({ ...col, checked: col.checked !== undefined ? col.checked : true })));
   const rootRef = useRef();
 
-  /**
-   * 重新加载表格
-   * @param {Object} 接口参数
-   */
-  const reload = (data) => {
+  useEffect(() => {
+    setColumnList(columns);
+  }, [columns]);
+
+  useEffect(() => {
+    if (props.fullscreen) {
+      ElementUtil.requestFullscreen(rootRef.current);
+    } else {
+      ElementUtil.exitFullscreen(rootRef.current);
+    }
+  }, [props.fullscreen]);
+
+  useEffect(() => {
     setLoading({
       loading: true,
     });
-    if (data) {
-      setSearchParams(data);
-    }
     const {
       url,
       params = {},
-    } = options;
+    } = data.options;
     axios.post(url, {
       pageNum,
       rowCount,
       ...params,
-      ...searchParams,
     }).then((res) => {
       const { returnList, totalRowCount } = res;
       setLoading(false);
       setSearchLoading(false);
       setDataSource(returnList);
     });
-  };
-  useEffect(() => {
-    reload();
-  }, [pageNum, rowCount, searchParams]);
+  }, [pageNum, rowCount, data.options, data.options.params]);
 
   const moveColumn = useCallback((dragIndex, hoverIndex) => {
     const dragColumn = columnList[dragIndex];
@@ -185,32 +183,13 @@ const YusoTable = ({ prefixCls, props, options }) => {
     })),
     dataSource,
   };
-  // if (title) {
-  //   tableProps.title = () => (
-  //     <Toolbar
-  //       schema={title}
-  //       columns={columnList}
-  //       onFilter={(cols) => {
-  //         setColumnList(cols);
-  //       }}
-  //       onFullscreen={(isFullscreen) => {
-  //         setFullscreen(isFullscreen);
-  //         if (isFullscreen) {
-  //           ElementUtil.requestFullscreen(rootRef.current);
-  //         } else {
-  //           ElementUtil.exitFullscreen(rootRef.current);
-  //         }
-  //       }}
-  //     />
-  //   );
-  // }
 
   const manager = useRef(RNDContext);
 
   return (
     <div ref={rootRef}
       className={classnames(prefixCls, {
-        [`${prefixCls}-fullscreen`]: fullscreen,
+        [`${prefixCls}-fullscreen`]: props.fullscreen,
       })}
     >
       {/* {search && (

@@ -5,17 +5,16 @@
  */
 import React from 'react';
 import * as antds from 'antd';
-import { Form, Row, Col, Space } from 'antd';
+import { Form, Row, Col, Space, Button } from 'antd';
 
 const components = {
   ...antds,
 };
 
-export default ({ prefixCls = 'yuso-search', cols = 3, onSearch, loading = false, props }) => {
+export default (data) => {
+  const { prefixCls = 'yuso-search', cols = 3, onSearch, onReset, loading = false, props } = data;
   const [form] = Form.useForm();
-  const { children = [], actions = [] } = props;
-
-  const getValue = () => form.getFieldsValue();
+  const { children = [] } = props;
 
   return (
     <div className={prefixCls}>
@@ -39,11 +38,26 @@ export default ({ prefixCls = 'yuso-search', cols = 3, onSearch, loading = false
           })}
           <Col span={24 / cols}>
             <Space>
-              {actions.map((action) => {
-                const { key, type, props, children = [] } = action;
-                let Comp = components[type];
-                return <Comp key={key} {...props}>{children}</Comp>;
-              })}
+              <Button onClick={() => {
+                form.resetFields();
+                if (onReset) {
+                  onReset(form.getFieldsValue());
+                }
+              }}
+              >
+                重置
+              </Button>
+              <Button
+                type="primary"
+                loading={loading}
+                onClick={() => {
+                  if (onSearch) {
+                    onSearch(form.getFieldsValue());
+                  }
+                }}
+              >
+                查询
+              </Button>
             </Space>
           </Col>
         </Row>
