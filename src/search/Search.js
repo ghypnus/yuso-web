@@ -26,7 +26,7 @@ export default (data) => {
             return (
               <Col key={idx} span={24 / cols}>
                 <Form.Item
-                  label={item.ui.label}
+                  label={item.label}
                   name={item.name}
                   labelCol={{ span: 8 }}
                   wrapperCol={{ span: 16 }}

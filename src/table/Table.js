@@ -94,11 +94,13 @@ const YusoTable = (data) => {
     bordered,
     rowKey,
     columns = [],
+    refresh,
+    onLoad,
   } = props;
-  const [pageNum, setPageNum] = useState(1);
-  const [rowCount, setRowCount] = useState(15);
+  const [current, setCurrent] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [searchLoading, setSearchLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [columnList, setColumnList] = useState(columns.map((col) => ({ ...col, checked: col.checked !== undefined ? col.checked : true })));
@@ -116,7 +118,7 @@ const YusoTable = (data) => {
     }
   }, [props.fullscreen]);
 
-  useEffect(() => {
+  const getData = () => {
     setLoading({
       loading: true,
     });
@@ -125,16 +127,28 @@ const YusoTable = (data) => {
       params = {},
     } = data.options;
     axios.post(url, {
-      pageNum,
-      rowCount,
+      pageNum: current,
+      rowCount: pageSize,
       ...params,
     }).then((res) => {
       const { returnList, totalRowCount } = res;
       setLoading(false);
-      setSearchLoading(false);
+      setTotal(totalRowCount);
       setDataSource(returnList);
+      if (onLoad) {
+        onLoad();
+      }
     });
-  }, [pageNum, rowCount, data.options, data.options.params]);
+  };
+  useEffect(() => {
+    getData();
+  }, [current, pageSize, data.options, data.options.params]);
+
+  useEffect(() => {
+    if (refresh) {
+      getData();
+    }
+  }, [refresh]);
 
   const moveColumn = useCallback((dragIndex, hoverIndex) => {
     const dragColumn = columnList[dragIndex];
@@ -156,6 +170,22 @@ const YusoTable = (data) => {
     rowSelection: {
       selectedRowKeys,
       onChange: (keys) => setSelectedRowKeys(keys),
+    },
+    pagination: {
+      current,
+      pageSize,
+      total,
+      showQuickJumper: true,
+      showSizeChanger: true,
+      showTotal: (total, range) => `共${total}条`,
+      onChange: ((page, pageSize) => {
+        setCurrent(page);
+        setPageSize(pageSize);
+      }),
+      onShowSizeChange: ((current, size) => {
+        setCurrent(current);
+        setPageSize(size);
+      }),
     },
     components: {
       header: {
@@ -192,16 +222,6 @@ const YusoTable = (data) => {
         [`${prefixCls}-fullscreen`]: props.fullscreen,
       })}
     >
-      {/* {search && (
-        <Search
-          data={search}
-          loading={searchLoading}
-          onSearch={(values) => {
-            setSearchLoading(true);
-            setSearchParams(values);
-          }}
-        />
-      )} */}
       <DndProvider manager={manager.current.dragDropManager}>
         <Table {...tableProps} />
       </DndProvider>
