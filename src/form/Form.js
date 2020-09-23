@@ -6,12 +6,13 @@ const components = {
   ...antds,
 };
 
-export default (data) => {
+export default (d) => {
   const { prefixCls = 'yuso-form',
     props = {},
     options = {},
+    data = {},
     submitOptions = {},
-    onSubmit } = data;
+    onSubmit } = d;
   const {
     cols = 2,
     labelCol = 8,
@@ -21,6 +22,9 @@ export default (data) => {
   } = props;
 
   const [form] = Form.useForm();
+  useEffect(() => {
+    form.setFieldsValue(data);
+  }, [data]);
 
   useEffect(() => {
     if (submit) {
@@ -28,6 +32,7 @@ export default (data) => {
         const { url, params = {} } = submitOptions;
         axios.post(url, {
           ...params,
+          ...data,
           ...fieldsValue,
         }).then(() => {
           if (onSubmit) {

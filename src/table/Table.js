@@ -11,6 +11,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 import classnames from 'classnames';
 import { ElementUtil } from 'yuso-util';
+import { convertChildrenToColumns } from './hooks/useColumns';
 
 const prefixCls = 'yuso-table';
 const type = 'DragableTitle';
@@ -89,13 +90,14 @@ const DragableTitle = (props) => {
 };
 
 const YusoTable = (data) => {
-  const { prefixCls, props } = data;
+  const { prefixCls, props, children } = data;
   const {
     bordered,
     rowKey,
-    columns = [],
+    columns,
     refresh,
     onLoad,
+    onSelect,
   } = props;
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -103,12 +105,19 @@ const YusoTable = (data) => {
   const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [columnList, setColumnList] = useState(columns.map((col) => ({ ...col, checked: col.checked !== undefined ? col.checked : true })));
+  const [columnList, setColumnList] = useState([]);
   const rootRef = useRef();
 
   useEffect(() => {
-    setColumnList(columns);
+    if (columns) {
+      setColumnList(columns);
+    }
   }, [columns]);
+
+  useEffect(() => {
+    const newColumns = columns || convertChildrenToColumns(children);
+    setColumnList(newColumns.map((col) => ({ ...col, checked: col.checked !== undefined ? col.checked : true })));
+  }, []);
 
   useEffect(() => {
     if (props.fullscreen) {
@@ -150,6 +159,10 @@ const YusoTable = (data) => {
     }
   }, [refresh]);
 
+  const convertColumns = useCallback(() => {
+
+  }, [columns, children]);
+
   const moveColumn = useCallback((dragIndex, hoverIndex) => {
     const dragColumn = columnList[dragIndex];
     setColumnList(
@@ -169,7 +182,12 @@ const YusoTable = (data) => {
     rowKey,
     rowSelection: {
       selectedRowKeys,
-      onChange: (keys) => setSelectedRowKeys(keys),
+      onChange: (keys) => {
+        setSelectedRowKeys(keys);
+        if (onSelect) {
+          onSelect(keys);
+        }
+      },
     },
     pagination: {
       current,
@@ -228,6 +246,8 @@ const YusoTable = (data) => {
     </div>
   );
 };
+
+YusoTable.Column = Table.Column;
 
 YusoTable.defaultProps = {
   prefixCls,
