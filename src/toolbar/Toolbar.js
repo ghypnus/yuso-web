@@ -6,8 +6,8 @@
 import React from 'react';
 import classnames from 'classnames';
 
-const Toolbar = (props) => {
-  const { prefixCls, align = 'right', children } = props;
+const Toolbar = (data) => {
+  const { prefixCls, align = 'right', children } = data;
   const wrapCls = classnames(prefixCls, {
     [`${prefixCls}-align-${align}`]: align,
   });

@@ -7,10 +7,10 @@ import React, { useState } from 'react';
 import { Popover, Checkbox, Tooltip } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 
-const ColumnSet = (props) => {
+const ColumnSet = (data) => {
   const [visible, setVisible] = useState(false);
 
-  const { prefixCls, columns = [], onChange, ...restProps } = props;
+  const { prefixCls, columns = [], onChange, ...restProps } = data;
 
   const checkedList = columns.filter((col) => col.checked);
   const isCheckAll = checkedList.length === columns.length;

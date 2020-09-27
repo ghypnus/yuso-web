@@ -7,9 +7,9 @@ import React, { useState } from 'react';
 import { Tooltip } from 'antd';
 import { FullscreenOutlined } from '@ant-design/icons';
 
-const Fullscreen = (props) => {
+const Fullscreen = (data) => {
   const [isFullscreen, setIsFullsreen] = useState(false);
-  const { prefixCls, onClick, ...restProps } = props;
+  const { prefixCls, onClick, ...restProps } = data;
   return (
     <Tooltip title="全屏">
       <FullscreenOutlined

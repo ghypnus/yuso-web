@@ -18,8 +18,7 @@ const type = 'DragableTitle';
 
 const RNDContext = createDndContext(HTML5Backend);
 
-const DragableTitle = (props) => {
-  const { index, onResize, width, moveColumn, style, children, ...restProps } = props;
+const DragableTitle = ({ index, onResize, width, moveColumn, style, children, ...restProps }) => {
   const ref = useRef();
   const [{ isOver, dropClassName }, drop] = useDrop({
     accept: type,
@@ -90,15 +89,18 @@ const DragableTitle = (props) => {
 };
 
 const YusoTable = (data) => {
-  const { prefixCls, props, children } = data;
   const {
+    prefixCls,
+    children,
     bordered,
     rowKey,
     columns,
+    fullscreen,
     refresh,
     onLoad,
     onSelect,
-  } = props;
+    onChange } = data;
+
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
@@ -115,22 +117,21 @@ const YusoTable = (data) => {
   }, [columns]);
 
   useEffect(() => {
+    // TODO children改变做比较，有必要再setColumnList
     const newColumns = columns || convertChildrenToColumns(children);
     setColumnList(newColumns.map((col) => ({ ...col, checked: col.checked !== undefined ? col.checked : true })));
-  }, []);
+  }, [children]);
 
   useEffect(() => {
-    if (props.fullscreen) {
+    if (fullscreen) {
       ElementUtil.requestFullscreen(rootRef.current);
     } else {
       ElementUtil.exitFullscreen(rootRef.current);
     }
-  }, [props.fullscreen]);
+  }, [fullscreen]);
 
   const getData = () => {
-    setLoading({
-      loading: true,
-    });
+    setLoading(true);
     const {
       url,
       params = {},
@@ -149,6 +150,7 @@ const YusoTable = (data) => {
       }
     });
   };
+
   useEffect(() => {
     getData();
   }, [current, pageSize, data.options, data.options.params]);
@@ -180,6 +182,7 @@ const YusoTable = (data) => {
     loading,
     bordered,
     rowKey,
+    onChange,
     rowSelection: {
       selectedRowKeys,
       onChange: (keys) => {
@@ -237,7 +240,7 @@ const YusoTable = (data) => {
   return (
     <div ref={rootRef}
       className={classnames(prefixCls, {
-        [`${prefixCls}-fullscreen`]: props.fullscreen,
+        [`${prefixCls}-fullscreen`]: fullscreen,
       })}
     >
       <DndProvider manager={manager.current.dragDropManager}>
