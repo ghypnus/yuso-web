@@ -18,7 +18,17 @@ const type = 'DragableTitle';
 
 const RNDContext = createDndContext(HTML5Backend);
 
-const DragableTitle = ({ index, onResize, width, moveColumn, style, children, ...restProps }) => {
+const DragableTitle = ({
+  // TODO 看一下Th接受哪些参数，重新处理一下。
+  index,
+  onResize,
+  width,
+  fixed,
+  title,
+  moveColumn,
+  style,
+  children,
+  ...restProps }) => {
   const ref = useRef();
   const [{ isOver, dropClassName }, drop] = useDrop({
     accept: type,
@@ -42,22 +52,24 @@ const DragableTitle = ({ index, onResize, width, moveColumn, style, children, ..
       isDragging: monitor.isDragging(),
     }),
   });
-  drop(drag(ref));
-  if (!width) {
-    return (
-      <th
-        {...restProps}
+  const isResize = !fixed && width;
+  const isDrag = !fixed && title;
+  if (isDrag) drop(drag(ref));
+  const th = isDrag ? (
+    <th
+      style={style}
+      {...restProps}
+    >
+      <span
+        ref={ref}
+        className={`${prefixCls}-drop-handle ${isOver ? dropClassName : ''}`}
+        style={{ cursor: 'move' }}
       >
-        <span
-          ref={ref}
-          className={`${prefixCls}-drop-handle ${isOver ? dropClassName : ''}`}
-          style={{ cursor: 'move', ...style }}
-        >
-          {children}
-        </span>
-      </th>
-    );
-  }
+        {children}
+      </span>
+    </th>
+  ) : <th style={style} {...restProps}>{children}</th>;
+  if (!isResize) return th;
   return (
     <Resizable
       width={width}
@@ -73,17 +85,7 @@ const DragableTitle = ({ index, onResize, width, moveColumn, style, children, ..
       onResize={onResize}
       draggableOpts={{ enableUserSelectHack: false }}
     >
-      <th
-        {...restProps}
-      >
-        <span
-          ref={ref}
-          className={`${prefixCls}-drop-handle ${isOver ? dropClassName : ''}`}
-          style={{ cursor: 'move', ...style }}
-        >
-          {children}
-        </span>
-      </th>
+      {th}
     </Resizable>
   );
 };
@@ -99,7 +101,8 @@ const YusoTable = (data) => {
     refresh,
     onLoad,
     onSelect,
-    onChange } = data;
+    onChange,
+    ...restProps } = data;
 
   const [current, setCurrent] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -175,15 +178,20 @@ const YusoTable = (data) => {
         ],
       }),
     );
-  },
-  [columnList]);
+  }, [columnList]);
 
   const tableProps = {
     loading,
     bordered,
     rowKey,
     onChange,
+    components: {
+      header: {
+        cell: DragableTitle,
+      },
+    },
     rowSelection: {
+      fixed: true,
       selectedRowKeys,
       onChange: (keys) => {
         setSelectedRowKeys(keys);
@@ -208,16 +216,13 @@ const YusoTable = (data) => {
         setPageSize(size);
       }),
     },
-    components: {
-      header: {
-        cell: DragableTitle,
-      },
-    },
     columns: columnList.filter((col) => col.checked).map((col, index) => ({
       ...col,
       onHeaderCell: (column) => ({
         index,
         width: column.width,
+        fixed: column.fixed,
+        title: column.title,
         className: `${prefixCls}-header-cell`,
         moveColumn,
         onResize: (e, { size }) => {
@@ -225,7 +230,7 @@ const YusoTable = (data) => {
             const nextColumns = [...columnList];
             nextColumns[index] = {
               ...nextColumns[index],
-              width: size.width,
+              width: size.width < 100 ? 100 : size.width,
             };
             return nextColumns;
           });
@@ -233,6 +238,7 @@ const YusoTable = (data) => {
       }),
     })),
     dataSource,
+    ...restProps,
   };
 
   const manager = useRef(RNDContext);
