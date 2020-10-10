@@ -21,16 +21,19 @@ export default (data) => {
           {children}
           <Col span={24 / cols}>
             <Space>
-              <Button onClick={() => {
-                form.resetFields();
-                if (onReset) {
-                  onReset(form.getFieldsValue());
-                }
-              }}
+              <Button
+                className={`${prefixCls}-button`}
+                onClick={() => {
+                  form.resetFields();
+                  if (onReset) {
+                    onReset(form.getFieldsValue());
+                  }
+                }}
               >
                 重置
               </Button>
               <Button
+                className={`${prefixCls}-button`}
                 type="primary"
                 loading={loading}
                 onClick={() => {

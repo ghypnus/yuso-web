@@ -10,7 +10,7 @@ import { DndProvider, useDrag, useDrop, createDndContext } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 import classnames from 'classnames';
-import { ElementUtil } from 'yuso-util';
+import { ElementUtil, InterfaceUtil } from 'yuso-util';
 import { convertChildrenToColumns } from './hooks/useColumns';
 
 const prefixCls = 'yuso-table';
@@ -133,25 +133,34 @@ const YusoTable = (data) => {
     }
   }, [fullscreen]);
 
-  const getData = () => {
+  const getData = async () => {
     setLoading(true);
-    const {
-      url,
-      params = {},
-    } = data.options;
-    axios.post(url, {
-      pageNum: current,
-      rowCount: pageSize,
-      ...params,
-    }).then((res) => {
-      const { returnList, totalRowCount } = res;
-      setLoading(false);
-      setTotal(totalRowCount);
-      setDataSource(returnList);
-      if (onLoad) {
-        onLoad();
-      }
+    const { params = {} } = data.options;
+    const res = await InterfaceUtil.post({
+      ...data.options,
+      params: {
+        ...params,
+        pageNum: current,
+        rowCount: pageSize,
+      },
     });
+    const { returnList, totalRowCount } = res;
+    setLoading(false);
+    setTotal(totalRowCount);
+    const cols = convertChildrenToColumns(children).filter((o) => !!o.dataIndexMapping);
+    setDataSource(returnList.map((item) => {
+      let d = {};
+      cols.map((col) => {
+        d[col.dataIndexMapping] = item[col.dataIndex];
+      });
+      return {
+        ...item,
+        ...d,
+      };
+    }));
+    if (onLoad) {
+      onLoad();
+    }
   };
 
   useEffect(() => {

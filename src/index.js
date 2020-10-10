@@ -7,5 +7,5 @@ export { default as Search } from './search/Search';
 export { default as Fullscreen } from './fullscreen/Fullscreen';
 export { default as ColumnSet } from './column-set/ColumnSet';
 export { default as Select } from './select/Select';
-
+export { default as DatePicker } from './date-picker/DatePicker';
 // export { default as LocaleProvider } from './locale-provider/index';
