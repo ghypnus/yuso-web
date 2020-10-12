@@ -1,10 +1,17 @@
 @import '../../style/theme/default.less';
 
 .yuso-search {
-    margin-bottom: 16px;
-    padding: 24px 24px 0;
-    background: #fff;
-    &-button {
-      margin-bottom: 24px;
+  margin-bottom: @search-spacing;
+  padding: @search-spacing @search-spacing 0;
+  background: #fff;
+
+  &-button {
+    margin-bottom: @search-spacing;
+  }
+
+  .ant-form {
+    &-item {
+      margin-bottom: @search-spacing;
     }
   }
+}
