@@ -7,7 +7,6 @@ const YusoForm = (d) => {
     children,
     data = {},
     submit = false,
-    options = {},
     submitOptions = {},
     onSubmit } = d;
 
@@ -19,12 +18,13 @@ const YusoForm = (d) => {
   useEffect(() => {
     if (submit) {
       form.validateFields().then((fieldsValue) => {
-        const { url, params = {} } = submitOptions;
-        axios.post(url, {
+        const { url, idProperty, params = {} } = submitOptions;
+        const newParams = {
           ...params,
-          ...data,
           ...fieldsValue,
-        }).then(() => {
+        };
+        if (data[idProperty]) newParams.id = data[idProperty];
+        axios.post(url, newParams).then(() => {
           if (onSubmit) {
             onSubmit();
           }
