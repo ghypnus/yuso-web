@@ -8,7 +8,8 @@ const YusoForm = (d) => {
     data = {},
     submit = false,
     submitOptions = {},
-    onSubmit } = d;
+    onSubmit,
+    ...restProps } = d;
 
   const [form] = Form.useForm();
   useEffect(() => {
@@ -35,7 +36,10 @@ const YusoForm = (d) => {
 
   return (
     <div className={prefixCls}>
-      <Form form={form}>
+      <Form
+        form={form}
+        {...restProps}
+      >
         <Row gutter={16}>
           {children}
         </Row>
