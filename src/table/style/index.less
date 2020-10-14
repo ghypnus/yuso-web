@@ -18,7 +18,7 @@
   }
 
   &-header-cell {
-    height: 49px;
+    height: @table-header-cell-height;
   }
 
   .drop-over-downward {
@@ -30,10 +30,13 @@
   }
 
   &-drop-handle {
+    display: flex;
+    align-items: center;
     width: 100%;
+    height: 100%;
     position: absolute;
     left: 0;
-    padding: 16px;
+    padding: @table-header-cell-padding;
     top: 0;
     .ant-table-column-sorters {
       padding: 0
