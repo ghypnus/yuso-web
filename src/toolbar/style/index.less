@@ -2,18 +2,27 @@
 
 // 工具栏
 .yuso-toolbar {
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 0 24px;
+  background-color: white;
+
+  &-wrap {
     display: flex;
     align-items: center;
-    height: 64px;
-    padding: 0 24px;
-    background-color: white;
+    flex-grow: 1;
+  }
 
-    &-wrap {
-      display: flex;
-      align-items: center;
-    }
-
-    &-align-right {
+  &-align-right {
+    .yuso-toolbar-wrap {
       justify-content: flex-end;
     }
   }
+
+  &-align-between {
+    .yuso-toolbar-wrap {
+      justify-content: space-between;
+    }
+  }
+}
