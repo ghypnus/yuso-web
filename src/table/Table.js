@@ -151,7 +151,7 @@ const YusoTable = (data) => {
     setDataSource(returnList.map((item) => {
       let d = {};
       cols.map((col) => {
-        d[col.dataIndexMapping] = item[col.dataIndex];
+        d[col.dataIndexMapping[0]] = item[col.dataIndexMapping[1]];
       });
       return {
         ...item,
