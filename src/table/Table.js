@@ -102,6 +102,7 @@ const YusoTable = (data) => {
     onLoad,
     onSelect,
     onChange,
+    selection = true,
     ...restProps } = data;
 
   const [current, setCurrent] = useState(1);
@@ -199,7 +200,7 @@ const YusoTable = (data) => {
         cell: DragableTitle,
       },
     },
-    rowSelection: {
+    rowSelection: selection ? {
       fixed: true,
       selectedRowKeys,
       onChange: (keys) => {
@@ -208,7 +209,7 @@ const YusoTable = (data) => {
           onSelect(keys);
         }
       },
-    },
+    } : null,
     pagination: {
       current,
       pageSize,
