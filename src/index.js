@@ -9,4 +9,5 @@ export { default as ColumnSet } from './column-set/ColumnSet';
 export { default as Select } from './select/Select';
 export { default as DatePicker } from './date-picker/DatePicker';
 export { default as Text } from './text/Text';
+export { default as Import } from './import/Import';
 // export { default as LocaleProvider } from './locale-provider/index';
