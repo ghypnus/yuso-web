@@ -21,7 +21,7 @@ export default (data) => {
           {children}
           <Col span={24 / cols}>
             <Space>
-              <Button
+              {onReset && <Button
                 className={`${prefixCls}-button`}
                 onClick={() => {
                   form.resetFields();
@@ -31,7 +31,7 @@ export default (data) => {
                 }}
               >
                 重置
-              </Button>
+              </Button>}
               <Button
                 className={`${prefixCls}-button`}
                 type="primary"
