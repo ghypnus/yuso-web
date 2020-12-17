@@ -27,7 +27,11 @@ const YusoForm = (d) => {
         if (data[idProperty]) newParams.id = data[idProperty];
         axios.post(url, newParams).then(() => {
           if (onSubmit) {
-            onSubmit();
+            onSubmit({ success: true });
+          }
+        }).catch(err => {
+          if (onSubmit) {
+            onSubmit({ success: false });
           }
         });
       });

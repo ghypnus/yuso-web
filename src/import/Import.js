@@ -6,6 +6,7 @@ import {
     Form,
     Col,
     Input,
+    Select,
     Upload,
     Space,
     message,
@@ -35,7 +36,7 @@ export default data => {
         title = '导入',
         visible = false,
         type,
-        width = "90%",
+        width = "95%",
         onCancel,
         onOk
     } = data;
@@ -50,7 +51,7 @@ export default data => {
     const [pageNum, setPageNum] = useState(1); //当前页码
     const [rowCount, setRowCount] = useState(10); //每页条数
     const [total, setTotal] = useState(0); //总数
-    const [batchid, setBatchid] = useState(null); //批次号
+    const [searchParams, setSearchParams] = useState({}); //搜索参数
     const [selectedRowKeys, setSelectedRowKeys] = ([]); //当前选中
     const [isEditId, setIsEditId] = useState(null); //当前编辑行的ID
     const [percent, setPercent] = useState(0); //校验/导入的进度条百分比
@@ -62,47 +63,87 @@ export default data => {
     let interval = null;
 
     useEffect(() => {
-        if (batchid) {
+        if (searchParams.batchid) {
             setUploadLoading(true);
-            getDataList(batchid);
+            getDataList();
         }
-    }, [pageNum, rowCount]);
+    }, [pageNum, rowCount, searchParams]);
 
     /**
      * 初始化轮询
+     * 1. 验证全部通过：导入按钮可以点击，导入后仅显示未验证通过的数据，
+     * 并提示：X条数据全部导入成功，导入批次为XXX。
+     * 2. 验证部分通过：导入按钮可以点击，导入后仅显示未验证通过的数据，
+     * 并提示：X条数据导入成功，导入批次为XXX，Y条数据未验证通过，尚未导入。导入按钮不可点击
+     * 3. 验证全不通过：导入按钮不可点击
+     * @param {Number} type 1:校验 2:导入
+     * btgcount 不通过数量
+     * tgcount 通过数量
+     * totalCount 总数
      */
     const initInterval = (type = 1) => {
         interval = setInterval(() => {
             axios.post('/action.php', {
                 request_type: 'IH|49',
-                batchid
+                batchid: searchParams.batchid
             }).then(res => {
                 if (interval) {
-                    const { btgcount, tgcount, totalCount } = res;
-                    let percent = (parseInt(btgcount) + parseInt(tgcount)) / totalCount;
+                    const btgcount = parseInt(res.btgcount);
+                    const tgcount = parseInt(res.tgcount);
+                    const totalCount = parseInt(res.totalCount);
+                    let percent = (btgcount + tgcount) / totalCount;
                     setPercent(percent * 100 > 100 ? 100 : percent * 100);
                     setProgressTotal(totalCount);
                     setProgressSuccess(tgcount);
                     setProgressFail(btgcount);
-                    if (parseInt(btgcount) + parseInt(tgcount) == parseInt(totalCount)) {
-                        message.success(`数据${type == 1 ? '校验' : '导入'}完成！`);
+                    if (btgcount + tgcount == totalCount) {
                         clearInterval(interval);
                         interval = null;
                         setProgressVisible(true);
-                        getDataList(batchid);
+                        getDataList();
                         setTimeout(() => {
                             if (type == 1) {
                                 setCheckLoading(false);
-                                setDisabled(false);
+                                if (tgcount > 0) {
+                                    setDisabled(false);
+                                }
+                                message.success(`数据校验完成！`);
                             } else {
                                 setLoading(false);
+                                setDisabled(true);
+                                let { batchid } = searchParams;
+                                if (tgcount == totalCount) {
+                                    Modal.success({
+                                        title: '导入结果',
+                                        content: `${tgcount}条数据全部导入成功，导入批次为${batchid}。`,
+                                    });
+                                } else if (tgcount > 0 && tgcount < totalCount) {
+                                    Modal.info({
+                                        title: '导入结果',
+                                        content: `${tgcount}条数据导入成功，导入批次为${batchid}，${btgcount}条数据未验证通过，尚未导入。`,
+                                    });
+                                }
+                                setSearchParams({
+                                    ...searchParams,
+                                    validstate: 2
+                                })
                             }
+
                         }, 1000);
 
                     }
                 }
             })
         }, 2000);
+    }
+
+    const reset = () => {
+        setSearchParams({});
+        setPageNum(1);
+        setRowCount(10);
+        setColumns([]);
+        setDataSource([]);
+        setDisabled(true);
     }
     /**
      * 提交导入
@@ -113,7 +154,7 @@ export default data => {
         setPercent(0);
         axios.post('/action.php', {
             request_type: 'IH|48',
-            batchid: batchid
+            batchid: searchParams.batchid
         }, {
             timeout: 500
         });
@@ -130,7 +171,7 @@ export default data => {
         setDisabled(true);
         axios.post('/action.php', {
             request_type: 'IH|46',
-            batchid: batchid
+            batchid: searchParams.batchid
 
         }, {
             timeout: 500
@@ -151,33 +192,30 @@ export default data => {
             }
             setUploadLoading(true);
             axios.post('/action.php', {
-                request_type: 'table|import1|ImportData',
-                url: response.url,
-                type: type
+                request_type: `table|import1|${type}`,
+                url: response.url
             }).then(res => {
                 setProgressVisible(false);
-                setBatchid(res.batchid);
-                getDataList(res.batchid);
+                setSearchParams({
+                    batchid: res.batchid
+                })
             })
         }
     }
 
     /**
      * 获取导入数据
-     * @param {Number} batchid 批次Id
+     * @param {Number} id 批次Id
      */
-    const getDataList = id => {
-        if (!id) return;
-        axios.post('/action.php', {
+    const getDataList = () => {
+        let opts = {
             request_type: 'table|query|ImportData',
-            batchid: id,
+            ...searchParams,
             pageNum: pageNum,
             rowCount: rowCount
-        }).then(res => {
+        }
+        axios.post('/action.php', opts).then(res => {
             setUploadLoading(false);
-            if (id != batchid) {
-                setProgressVisible(false);
-            }
             if (res) {
                 if (res.columnName) {
                     setColumns(res.columnName.map((col, idx) => {
@@ -255,7 +293,9 @@ export default data => {
         title={title}
         width={width}
         visible={visible}
+        maskClosable={false}
         onCancel={() => {
+            reset();
             if (onCancel) {
                 onCancel()
             }
@@ -278,9 +318,11 @@ export default data => {
             </Button>,
         ]}>
         <Search
+            data={searchParams}
             onSearch={data => {
                 setUploadLoading(true);
-                getDataList(batchid);
+                setProgressVisible(false);
+                setSearchParams(data)
             }}>
             <>
                 <Col span={6}>
@@ -290,11 +332,21 @@ export default data => {
                         <Input
                             allowClear
                             placeholder="请输入批次号"
-                            value={batchid}
-                            onChange={e => {
-                                setBatchid(e.target.value);
-                            }}
                         />
+
+                    </Form.Item>
+
+                </Col>
+                <Col span={6}>
+                    <Form.Item
+                        label="验证状态"
+                        name="validstate">
+                        <Select allowClear
+                            placeholder="请选择验证状态">
+                            <Select.Option value={1}>未验证</Select.Option>
+                            <Select.Option value={2}>验证不通过</Select.Option>
+                            <Select.Option value={3}>验证通过</Select.Option>
+                        </Select>
                     </Form.Item>
                 </Col>
             </>
@@ -422,7 +474,8 @@ export default data => {
                                 icon={<CloseCircleOutlined />}
                                 style={{ padding: 0 }}
                                 onClick={() => {
-                                    setIsEditId(null)
+                                    setIsEditId(null);
+                                    getDataList();
                                 }}>
                                 取消
                         </Button>

@@ -6,13 +6,20 @@
 import React, { useEffect } from 'react';
 import { Form, Row, Col, Space, Button } from 'antd';
 
-export default (data) => {
-  const { prefixCls = 'yuso-search', cols = 3, onSearch, onReset, loading = false, children } = data;
+export default props => {
+  const {
+    prefixCls = 'yuso-search',
+    cols = 3,
+    loading = false,
+    data = {},
+    children,
+    onSearch,
+    onReset } = props;
   const [form] = Form.useForm();
 
   useEffect(() => {
-    form.resetFields();
-  }, []);
+    form.setFieldsValue(data);
+  }, [data]);
 
   return (
     <div className={prefixCls}>
