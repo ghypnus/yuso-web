@@ -19,13 +19,14 @@ import {
 import {
     EditOutlined,
     SaveOutlined,
-    CloseCircleOutlined
+    CloseCircleOutlined,
+    WarningOutlined
 } from '@ant-design/icons';
 import Search from '../search/Search';
 import Toolbar from '../toolbar/Toolbar';
 import { useEffect } from 'react';
 
-const COLUMN_WIDTH = 120;
+const COLUMN_WIDTH = 130;
 /**
  * 导入模块
  * @author ghypnus
@@ -138,12 +139,16 @@ export default data => {
     }
 
     const reset = () => {
-        setSearchParams({});
+        setSearchParams({
+            batchid: null,
+            validstate: null
+        });
         setPageNum(1);
         setRowCount(10);
         setColumns([]);
         setDataSource([]);
         setDisabled(true);
+        setProgressVisible(false);
     }
     /**
      * 提交导入
@@ -237,6 +242,16 @@ export default data => {
                         d[`key_${k}`] = v;
                     })
                     data.data = d;
+                    if (item.errorfieldid) {
+                        let fieldList = item.errorfieldid.split(',');
+                        let messageList = item.errormessage.split('；');
+                        let error = {};
+                        fieldList.map((v, k) => {
+                            error[`key_${k}`] = messageList[k];
+                        })
+                        data.error = error;
+                    }
+
                     return data;
                 }));
                 setTotal(res.totalRowCount);
@@ -261,6 +276,18 @@ export default data => {
                     setDataSource([...dataSource]);
                 }} />;
         } else {
+            const error = record.error;
+            if (error && error[dataIndex]) {
+                return <>
+                    <Tooltip
+                        forceRender
+                        placement="topLeft"
+                        title={error[dataIndex]}>
+                        <WarningOutlined style={{ color: '#f5222d', marginRight: '3px' }} />
+                        {text}
+                    </Tooltip>
+                </>
+            }
             return text;
         }
     }
