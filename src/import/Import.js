@@ -244,7 +244,7 @@ export default data => {
                     data.data = d;
                     if (item.errorfieldid) {
                         let fieldList = item.errorfieldid.split(',');
-                        let messageList = item.errormessage.split('；');
+                        let messageList = item.errormessage.split(',');
                         let error = {};
                         fieldList.map((v, k) => {
                             error[`key_${k}`] = messageList[k];
