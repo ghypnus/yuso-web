@@ -63,6 +63,7 @@
   "dependencies": {
     "classnames": "^2.2.6",
     "exif-js": "^2.3.0",
+    "ifanrx-react-ueditor": "^2.3.2",
     "immutability-helper": "^3.1.1",
     "qs": "^6.9.1",
     "react-dnd": "^11.1.3",
