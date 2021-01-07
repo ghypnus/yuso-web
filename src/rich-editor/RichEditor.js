@@ -5,7 +5,6 @@ const config = {
     autoHeightEnabled: false,
     initialFrameHeight: 240,
     initialFrameWidth: '100%',
-    serverUrl: `${process.env.REACT_APP_PROXY_URL}/Ueditor/php/controller.php`,
     toolbars: [
         [
             'source', //源代码
@@ -48,12 +47,15 @@ const config = {
     ]
 }
 
-const RichEditor = ({ value, onChange }) => {
+const RichEditor = ({ value, onChange, ueditorPath = "/UEditor/" }) => {
 
     return <ReactUeditor
         value={value}
-        config={config}
-        ueditorPath="/UEditor/"
+        config={{
+            ...config,
+            serverUrl: `${process.env.REACT_APP_PROXY_URL}${ueditorPath}php/controller.php`
+        }}
+        ueditorPath={ueditorPath}
         onChange={content => {
             if (onChange) {
                 onChange(content);
