@@ -137,12 +137,14 @@ const YusoTable = (data) => {
   const getData = async () => {
     setLoading(true);
     const { params = {} } = data.options;
+    const { pageNum } = params;
+    if(params.pageNum) setCurrent(pageNum);
     const res = await InterfaceUtil.post({
       ...data.options,
       params: {
-        ...params,
         pageNum: current,
         rowCount: pageSize,
+        ...params
       },
     });
     const { returnList, totalRowCount } = res;
@@ -165,7 +167,9 @@ const YusoTable = (data) => {
   };
 
   useEffect(() => {
-    getData();
+    if(!loading) {
+      getData();
+    }
   }, [current, pageSize, data.options, data.options.params]);
 
   useEffect(() => {
