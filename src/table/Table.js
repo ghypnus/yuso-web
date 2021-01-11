@@ -106,6 +106,7 @@ const YusoTable = (data) => {
     ...restProps } = data;
 
   const [current, setCurrent] = useState(1);
+  const [currentLoading, setCurrentLoading] = useState(false);
   const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -138,7 +139,9 @@ const YusoTable = (data) => {
     setLoading(true);
     const { params = {} } = data.options;
     const { pageNum } = params;
-    if(params.pageNum) setCurrent(pageNum);
+    if(params.pageNum && !currentLoading) {
+      setCurrent(pageNum);
+    }
     const res = await InterfaceUtil.post({
       ...data.options,
       params: {
@@ -148,6 +151,7 @@ const YusoTable = (data) => {
       },
     });
     const { returnList, totalRowCount } = res;
+    setCurrentLoading(false);
     setLoading(false);
     setTotal(totalRowCount);
     const cols = convertChildrenToColumns(children).filter((o) => !!o.dataIndexMapping);
@@ -222,6 +226,7 @@ const YusoTable = (data) => {
       showSizeChanger: true,
       showTotal: (total, range) => `共${total}条`,
       onChange: ((page, pageSize) => {
+        setCurrentLoading(true);
         setCurrent(page);
         setPageSize(pageSize);
       }),
