@@ -53,7 +53,7 @@ export default data => {
     const [rowCount, setRowCount] = useState(10); //每页条数
     const [total, setTotal] = useState(0); //总数
     const [searchParams, setSearchParams] = useState({}); //搜索参数
-    const [selectedRowKeys, setSelectedRowKeys] = ([]); //当前选中
+    const [selectedRowKeys, setSelectedRowKeys] = useState([]); //当前选中
     const [isEditId, setIsEditId] = useState(null); //当前编辑行的ID
     const [percent, setPercent] = useState(0); //校验/导入的进度条百分比
     const [progressVisible, setProgressVisible] = useState(false); //校验/导入结果是否显示
@@ -247,7 +247,7 @@ export default data => {
                         let messageList = item.errormessage.split(',');
                         let error = {};
                         fieldList.map((v, k) => {
-                            error[`key_${k}`] = messageList[k];
+                            error[`key_${v}`] = messageList[k];
                         })
                         data.error = error;
                     }
@@ -313,6 +313,26 @@ export default data => {
         }).then(res => {
             setSaveLoading(false);
             setIsEditId(null);
+        })
+    }
+
+    /**
+     * 删除选中的导入数据
+     */
+    const handleDelChange = () => {
+        Modal.confirm({
+            title: "提示",
+            content: '是否确认批量删除？',
+            onOk() {
+                axios.post('/action.php', {
+                    request_type: 'table|del|ImportData',
+                    oids: selectedRowKeys
+                }).then(() => {
+                    getDataList();
+                })
+            },
+            onCancel() {
+            }
         })
     }
 
@@ -384,16 +404,23 @@ export default data => {
                 <Typography.Text type="success">通过：{progressSuccess}条</Typography.Text>
                 <Typography.Text type="danger">不通过：{progressFail}条</Typography.Text>
             </Space>}
-            <Upload
-                name="imgFile"
-                showUploadList={false}
-                action={`${process.env.REACT_APP_PROXY_URL}/crm/plugins3th/kindeditor/upload_json.php?dir=file&type=file`}
-                loading={uploadLoading}
-                onChange={info => {
-                    uploadChange(info)
-                }}>
-                <Button>上传文件</Button>
-            </Upload>
+            <Space>
+                <Button
+                    disabled={selectedRowKeys.length == 0}
+                    onClick={() => {
+                        handleDelChange();
+                    }}>批量删除</Button>
+                <Upload
+                    name="imgFile"
+                    showUploadList={false}
+                    action={`${process.env.REACT_APP_PROXY_URL}/crm/plugins3th/kindeditor/upload_json.php?dir=file&type=file`}
+                    loading={uploadLoading}
+                    onChange={info => {
+                        uploadChange(info)
+                    }}>
+                    <Button>上传文件</Button>
+                </Upload>
+            </Space>
         </Toolbar>
         <Table
             size="small"

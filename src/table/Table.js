@@ -12,6 +12,7 @@ import update from 'immutability-helper';
 import classnames from 'classnames';
 import { ElementUtil, InterfaceUtil } from 'yuso-util';
 import { convertChildrenToColumns } from './hooks/useColumns';
+import Summary from './Summary';
 
 const prefixCls = 'yuso-table';
 const type = 'DragableTitle';
@@ -98,6 +99,7 @@ const YusoTable = (data) => {
     rowKey,
     columns,
     fullscreen,
+    summary,
     refresh,
     onLoad,
     onSelect,
@@ -139,8 +141,10 @@ const YusoTable = (data) => {
     setLoading(true);
     const { params = {} } = data.options;
     const { pageNum } = params;
-    if(params.pageNum && !currentLoading) {
+    if (params.pageNum && !currentLoading) {
       setCurrent(pageNum);
+    } else {
+      delete params.pageNum;
     }
     const res = await InterfaceUtil.post({
       ...data.options,
@@ -171,7 +175,7 @@ const YusoTable = (data) => {
   };
 
   useEffect(() => {
-    if(!loading) {
+    if (!loading) {
       getData();
     }
   }, [current, pageSize, data.options, data.options.params]);
@@ -259,6 +263,13 @@ const YusoTable = (data) => {
     dataSource,
     ...restProps,
   };
+
+  if (summary) {
+    tableProps.summary = () => <Summary
+      selectedRowKeys={selectedRowKeys}
+      columns={columnList.filter((col) => col.checked)}
+      dataSource={dataSource} />
+  }
 
   const manager = useRef(RNDContext);
 
