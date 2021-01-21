@@ -60,6 +60,8 @@ export default data => {
     const [progressTotal, setProgressTotal] = useState(0); //校验/导入总数
     const [progressSuccess, setProgressSuccess] = useState(0); //校验/导入成功数
     const [progressFail, setProgressFail] = useState(0); //校验/导入失败数
+    const [progressImportSuccess, setProgressImportSuccess] = useState(0); //导入/导入成功数量
+    const [progressImportFail, setProgressImportFail] = useState(0); //导入/导入失败数量
 
     let interval = null;
 
@@ -70,6 +72,17 @@ export default data => {
         }
     }, [pageNum, rowCount, searchParams]);
 
+
+    /**
+     * 获取导入结果
+     * @param {Number} batchid
+     */
+    const getImportResult = (batchid) => {
+        return axios.post('/action.php', {
+            request_type: 'IH|49',
+            batchid: batchid
+        })
+    }
     /**
      * 初始化轮询
      * 1. 验证全部通过：导入按钮可以点击，导入后仅显示未验证通过的数据，
@@ -84,22 +97,23 @@ export default data => {
      */
     const initInterval = (type = 1) => {
         interval = setInterval(() => {
-            axios.post('/action.php', {
-                request_type: 'IH|49',
-                batchid: searchParams.batchid
-            }).then(res => {
+            getImportResult(searchParams.batchid).then(res => {
                 if (interval) {
                     const btgcount = parseInt(res.btgcount);
                     const tgcount = parseInt(res.tgcount);
                     const totalCount = parseInt(res.totalCount);
+                    const drcount = parseInt(res.drcount);
                     let percent = (btgcount + tgcount) / totalCount;
-                    setPercent(percent * 100 > 100 ? 100 : percent * 100);
-                    setProgressTotal(totalCount);
-                    setProgressSuccess(tgcount);
-                    setProgressFail(btgcount);
+                    setPercent(percent * 100 > 100 ? 100 : (percent * 100).toFixed(0));
+
                     if (btgcount + tgcount == totalCount) {
                         clearInterval(interval);
                         interval = null;
+                        setProgressTotal(totalCount);
+                        setProgressSuccess(tgcount);
+                        setProgressFail(btgcount);
+                        setProgressImportSuccess(drcount);
+                        setProgressImportFail(totalCount - drcount);
                         setProgressVisible(true);
                         getDataList();
                         setTimeout(() => {
@@ -368,8 +382,21 @@ export default data => {
             data={searchParams}
             onSearch={data => {
                 setUploadLoading(true);
-                setProgressVisible(false);
-                setSearchParams(data)
+                setSearchParams(data);
+                getImportResult(data.batchid).then(res => {
+                    const btgcount = parseInt(res.btgcount);
+                    const tgcount = parseInt(res.tgcount);
+                    const totalCount = parseInt(res.totalCount);
+                    const drcount = parseInt(res.drcount);
+                    setProgressTotal(totalCount);
+                    setProgressSuccess(tgcount);
+                    setProgressFail(btgcount);
+                    setProgressImportSuccess(drcount);
+                    setProgressImportFail(totalCount - drcount);
+                    setProgressVisible(true);
+                    let isDisabled = tgcount == 0 || drcount == totalCount;
+                    setDisabled(isDisabled);
+                })
             }}>
             <>
                 <Col span={6}>
@@ -401,8 +428,10 @@ export default data => {
         <Toolbar align={progressVisible ? 'between' : 'right'}>
             {progressVisible && <Space split={<Divider type="vertical" />}>
                 <Typography.Text>总共：{progressTotal}条</Typography.Text>
-                <Typography.Text type="success">通过：{progressSuccess}条</Typography.Text>
-                <Typography.Text type="danger">不通过：{progressFail}条</Typography.Text>
+                <Typography.Text type="success">验证通过：{progressSuccess}条</Typography.Text>
+                <Typography.Text type="danger">验证不通过：{progressFail}条</Typography.Text>
+                <Typography.Text type="success">导入：{progressImportSuccess}条</Typography.Text>
+                <Typography.Text type="danger">未导入：{progressImportFail}条</Typography.Text>
             </Space>}
             <Space>
                 <Button
@@ -456,7 +485,7 @@ export default data => {
                 }),
             }}>
             {columns.map(col => {
-                return <Table.Column {...col} render={(text, record) => {
+                return <Table.Column key={col.dataIndex} {...col} render={(text, record) => {
                     return renderColumn(col, record);
                 }}>
                 </Table.Column>
@@ -503,7 +532,7 @@ export default data => {
                 fixed="right"
                 render={(text, record) => {
                     return <Space>
-                        {isEditId != record.oid && <Button
+                        {record.importstate != 1 && isEditId != record.oid && <Button
                             type="link"
                             size="small"
                             icon={<EditOutlined />}

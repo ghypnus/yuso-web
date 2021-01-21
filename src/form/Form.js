@@ -1,17 +1,28 @@
-import React, { useEffect, useState } from 'react';
-import { Form, Row, Col } from 'antd';
+import React, { useEffect } from 'react';
+import { Form, Row } from 'antd';
 
 const YusoForm = (d) => {
   const {
     prefixCls = 'yuso-form',
     children,
     data = {},
+    reset = false,
     submit = false,
     submitOptions = {},
+    onError,
     onSubmit,
+    onReset,
     ...restProps } = d;
 
   const [form] = Form.useForm();
+
+  useEffect(() => {
+    if (reset) {
+      form.resetFields();
+      onReset();
+    }
+  }, [reset])
+
   useEffect(() => {
     form.setFieldsValue(data);
   }, [data]);
@@ -28,12 +39,15 @@ const YusoForm = (d) => {
         axios.post(url, newParams).then(() => {
           if (onSubmit) {
             onSubmit({ success: true });
+            form.resetFields();
           }
-        }).catch(err => {
+        }).catch(_ => {
           if (onSubmit) {
             onSubmit({ success: false });
           }
         });
+      }).catch(_ => {
+        onError();
       });
     }
   }, [submit]);
