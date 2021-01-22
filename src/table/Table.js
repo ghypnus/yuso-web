@@ -186,10 +186,6 @@ const YusoTable = (data) => {
     }
   }, [refresh]);
 
-  const convertColumns = useCallback(() => {
-
-  }, [columns, children]);
-
   const moveColumn = useCallback((dragIndex, hoverIndex) => {
     const dragColumn = columnList[dragIndex];
     setColumnList(
