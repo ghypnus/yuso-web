@@ -104,6 +104,7 @@ const YusoTable = (data) => {
     onLoad,
     onSelect,
     onChange,
+    cached,
     selection = true,
     ...restProps } = data;
 
@@ -137,7 +138,7 @@ const YusoTable = (data) => {
     }
   }, [fullscreen]);
 
-  const getData = async () => {
+  const getData = async (page = current, size = pageSize) => {
     setLoading(true);
     const { params = {} } = data.options;
     const { pageNum } = params;
@@ -149,8 +150,8 @@ const YusoTable = (data) => {
     const res = await InterfaceUtil.post({
       ...data.options,
       params: {
-        pageNum: current,
-        rowCount: pageSize,
+        pageNum: page,
+        rowCount: size,
         ...params
       },
     });
@@ -175,10 +176,10 @@ const YusoTable = (data) => {
   };
 
   useEffect(() => {
-    if (!loading) {
+    if (!loading && !cached) {
       getData();
     }
-  }, [current, pageSize, data.options, data.options.params]);
+  }, [data.options, data.options.params]);
 
   useEffect(() => {
     if (refresh) {
@@ -229,11 +230,8 @@ const YusoTable = (data) => {
         setCurrentLoading(true);
         setCurrent(page);
         setPageSize(pageSize);
-      }),
-      onShowSizeChange: ((current, size) => {
-        setCurrent(current);
-        setPageSize(size);
-      }),
+        getData(page, pageSize);
+      })
     },
     columns: columnList.filter((col) => col.checked).map((col, index) => ({
       ...col,
