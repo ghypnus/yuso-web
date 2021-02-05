@@ -47,12 +47,13 @@ const config = {
     ]
 }
 
-const RichEditor = ({ value, onChange, ueditorPath = "/UEditor/" }) => {
+const RichEditor = ({ value, onChange, readonly = false, ueditorPath = "/UEditor/" }) => {
 
     return <ReactUeditor
         value={value}
         config={{
             ...config,
+            readonly,
             serverUrl: `${process.env.REACT_APP_PROXY_URL}${ueditorPath}php/controller.php`
         }}
         ueditorPath={ueditorPath}
