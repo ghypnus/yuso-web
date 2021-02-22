@@ -47,16 +47,27 @@ const config = {
     ]
 }
 
-const RichEditor = ({ value, onChange, readonly = false, ueditorPath = "/UEditor/" }) => {
+/**
+ * 处理复制图片
+ * @param {File} src 图片
+ */
+const handlePasteImage = src => {
+    console.log(123, src);
+}
 
+const RichEditor = ({ value, onChange, readonly = false, ueditorPath = "/UEditor/" }) => {
+    const serverUrl = `${process.env.REACT_APP_PROXY_URL}${ueditorPath}php/controller.php`;
     return <ReactUeditor
         value={value}
         config={{
             ...config,
             readonly,
-            serverUrl: `${process.env.REACT_APP_PROXY_URL}${ueditorPath}php/controller.php`
+            serverUrl
         }}
         ueditorPath={ueditorPath}
+        handlePasteImage={src => {
+            handlePasteImage(src);
+        }}
         onChange={content => {
             if (onChange) {
                 onChange(content);
