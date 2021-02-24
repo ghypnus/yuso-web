@@ -105,8 +105,8 @@ export default data => {
                     const drcount = parseInt(res.drcount);
                     let percent = (btgcount + tgcount) / totalCount;
                     setPercent(percent * 100 > 100 ? 100 : (percent * 100).toFixed(0));
-
-                    if (btgcount + tgcount == totalCount) {
+                    let isFinished = type == 1 ? btgcount + tgcount == totalCount : tgcount == drcount;
+                    if (isFinished) {
                         clearInterval(interval);
                         interval = null;
                         setProgressTotal(totalCount);
