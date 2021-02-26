@@ -106,6 +106,7 @@ const YusoTable = (data) => {
     onChange,
     cached,
     selection = true,
+    sticky,
     ...restProps } = data;
 
   const [current, setCurrent] = useState(1);
@@ -255,6 +256,12 @@ const YusoTable = (data) => {
     dataSource,
     ...restProps,
   };
+
+  if (sticky) {
+    tableProps.sticky = {
+      offsetHeader: loading ? 0 : sticky.offsetHeader
+    }
+  }
 
   if (summary) {
     tableProps.summary = () => <Summary
